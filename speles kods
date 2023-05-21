@@ -1,0 +1,53 @@
+# Class to represent an Employee
+class Employee:
+    def __init__(self, name, contact_number, responsibilities):
+        self.name = name
+        self.contact_number = contact_number
+        self.responsibilities = responsibilities
+
+# Class to represent a Chemistry Category
+class ChemistryCategory:
+    def __init__(self, name):
+        self.name = name
+
+# Class to represent an Experiment
+class Experiment:
+    def __init__(self, name, employee, category):
+        self.name = name
+        self.employee = employee
+        self.category = category
+
+# List to store employees, categories, and experiments
+employees = []
+categories = []
+experiments = []
+
+# Function to add an employee
+def add_employee(name, contact_number, responsibilities):
+    employee = Employee(name, contact_number, responsibilities)
+    employees.append(employee)
+    print("Employee successfully added!")
+
+# Function to add a chemistry category
+def add_category(name):
+    category = ChemistryCategory(name)
+    categories.append(category)
+    print("Category successfully added!")
+
+# Function to add an experiment
+def add_experiment(name, employee, category):
+    experiment = Experiment(name, employee, category)
+    experiments.append(experiment)
+    print("Experiment successfully added!")
+
+# Add employees
+add_employee("John Doe", "123-456-7890", "Organic Chemistry")
+add_employee("Jane Smith", "987-654-3210", "Inorganic Chemistry")
+
+# Add categories
+add_category("Organic Chemistry")
+add_category("Inorganic Chemistry")
+
+# Add experiments
+add_experiment("Experiment 1", employees[0], categories[0])  # John Doe, Organic Chemistry
+add_experiment("Experiment 2", employees[1], categories[1])  # Jane Smith, Inorganic Chemistry
