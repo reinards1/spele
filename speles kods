@@ -1,53 +1,106 @@
-# Class to represent an Employee
-class Employee:
-    def __init__(self, name, contact_number, responsibilities):
-        self.name = name
-        self.contact_number = contact_number
-        self.responsibilities = responsibilities
+import pygame
+from pygame.locals import *
+import random
 
-# Class to represent a Chemistry Category
-class ChemistryCategory:
-    def __init__(self, name):
-        self.name = name
+# shape parameters
+size = width, height = (800, 800)
+road_w = int(width/1.6)
+roadmark_w = int(width/80)
+# location parameters
+right_lane = width/2 + road_w/4
+left_lane = width/2 - road_w/4
+# animation parameters
+speed = 1
 
-# Class to represent an Experiment
-class Experiment:
-    def __init__(self, name, employee, category):
-        self.name = name
-        self.employee = employee
-        self.category = category
+# initiallize the app
+pygame.init()
+running = True
 
-# List to store employees, categories, and experiments
-employees = []
-categories = []
-experiments = []
+# set window size
+screen = pygame.display.set_mode(size)
+# set window title
+pygame.display.set_caption("Mariya's car game")
+# set background colour
+screen.fill((60, 220, 0))
+# apply changes
+pygame.display.update()
 
-# Function to add an employee
-def add_employee(name, contact_number, responsibilities):
-    employee = Employee(name, contact_number, responsibilities)
-    employees.append(employee)
-    print("Employee successfully added!")
+# load player vehicle
+car = pygame.image.load("car.png")
+#resize image
+#car = pygame.transform.scale(car, (250, 250))
+car_loc = car.get_rect()
+car_loc.center = right_lane, height*0.8
 
-# Function to add a chemistry category
-def add_category(name):
-    category = ChemistryCategory(name)
-    categories.append(category)
-    print("Category successfully added!")
+# load enemy vehicle
+car2 = pygame.image.load("otherCar.png")
+car2_loc = car2.get_rect()
+car2_loc.center = left_lane, height*0.2
 
-# Function to add an experiment
-def add_experiment(name, employee, category):
-    experiment = Experiment(name, employee, category)
-    experiments.append(experiment)
-    print("Experiment successfully added!")
+counter = 0
+# game loop
+while running:
+    counter += 1
 
-# Add employees
-add_employee("John Doe", "123-456-7890", "Organic Chemistry")
-add_employee("Jane Smith", "987-654-3210", "Inorganic Chemistry")
+    # increase game difficulty overtime
+    if counter == 5000:
+        speed += 0.15
+        counter = 0
+        print("level up", speed)
 
-# Add categories
-add_category("Organic Chemistry")
-add_category("Inorganic Chemistry")
+    # animate enemy vehicle
+    car2_loc[1] += speed
+    if car2_loc[1] > height:
+        # randomly select lane
+        if random.randint(0,1) == 0:
+            car2_loc.center = right_lane, -200
+        else:
+            car2_loc.center = left_lane, -200
 
-# Add experiments
-add_experiment("Experiment 1", employees[0], categories[0])  # John Doe, Organic Chemistry
-add_experiment("Experiment 2", employees[1], categories[1])  # Jane Smith, Inorganic Chemistry
+    # end game logic
+    if car_loc[0] == car2_loc[0] and car2_loc[1] > car_loc[1] - 250:
+        print("GAME OVER! YOU LOST!")
+        break
+
+    # event listeners
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            # collapse the app
+            running = False
+        if event.type == KEYDOWN:
+            # move user car to the left
+            if event.key in [K_a, K_LEFT]:
+                car_loc = car_loc.move([-int(road_w/2), 0])
+            # move user car to the right
+            if event.key in [K_d, K_RIGHT]:
+                car_loc = car_loc.move([int(road_w/2), 0])
+    
+    # draw road
+    pygame.draw.rect(
+        screen,
+        (50, 50, 50),
+        (width/2-road_w/2, 0, road_w, height))
+    # draw centre line
+    pygame.draw.rect(
+        screen,
+        (255, 240, 60),
+        (width/2 - roadmark_w/2, 0, roadmark_w, height))
+    # draw left road marking
+    pygame.draw.rect(
+        screen,
+        (255, 255, 255),
+        (width/2 - road_w/2 + roadmark_w*2, 0, roadmark_w, height))
+    # draw right road marking
+    pygame.draw.rect(
+        screen,
+        (255, 255, 255),
+        (width/2 + road_w/2 - roadmark_w*3, 0, roadmark_w, height))
+
+    # place car images on the screen
+    screen.blit(car, car_loc)
+    screen.blit(car2, car2_loc)
+    # apply changes
+    pygame.display.update()
+
+# collapse application window
+pygame.quit()
